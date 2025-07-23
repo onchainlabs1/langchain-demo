@@ -1,0 +1,27 @@
+# Ambiente virtual
+.venv/
+
+# Arquivos Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Uploads
+uploads/
+
+# Configuração do VSCode e Cursor
+.vscode/
+.cursor/
+
+# Arquivos temporários
+*.log
+*.tmp
+
+# Testes
+htmlcov/
+.coverage
+.cache/
+
+# Outros
+.DS_Store
