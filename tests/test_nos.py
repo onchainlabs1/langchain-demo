@@ -1,31 +1,41 @@
 import pytest
 import pandas as pd
 import re
+import sys
+import os
+
+# Add src to path for imports
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
+
 from graph.nos import interpreter, run_dataframe_analysis_node
 
 
 def test_interpreter_tabular_analysis():
     question = "What is the average of column A?"
-    result = interpreter(question)
-    assert result == {"next_node": "run_dataframe_analysis"}, "Should route to DataFrame analysis."
+    state = {"question": question, "next_node": ""}
+    result = interpreter(state)
+    assert result["next_node"] == "run_dataframe_analysis", "Should route to DataFrame analysis."
 
 
 def test_interpreter_general_question():
     question = "What is the capital of France?"
-    result = interpreter(question)
-    assert result == {"next_node": "end"}, "Should end for non-tabular questions."
+    state = {"question": question, "next_node": ""}
+    result = interpreter(state)
+    assert result["next_node"] == "end", "Should end for non-tabular questions."
 
 
 def test_interpreter_keyword_variation():
     question = "Show a graph of the sum of the values."
-    result = interpreter(question)
-    assert result == {"next_node": "run_dataframe_analysis"}, "Should route to DataFrame analysis."
+    state = {"question": question, "next_node": ""}
+    result = interpreter(state)
+    assert result["next_node"] == "run_dataframe_analysis", "Should route to DataFrame analysis."
 
 
 def test_interpreter_case_insensitive():
     question = "WhAt Is ThE AvErAgE Of CoLuMn price?"
-    result = interpreter(question)
-    assert result == {"next_node": "run_dataframe_analysis"}, "Should be case-insensitive."
+    state = {"question": question, "next_node": ""}
+    result = interpreter(state)
+    assert result["next_node"] == "run_dataframe_analysis", "Should be case-insensitive."
 
 
 def test_run_dataframe_analysis_node():

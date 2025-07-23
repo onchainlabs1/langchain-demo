@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "department": "Engineering",
+    "salary": 75000,
+    "age": 32,
+    "experience_years": 5,
+    "performance_score": 8.5
+  },
+  {
+    "id": 2,
+    "name": "Jane Smith",
+    "department": "Marketing",
+    "salary": 65000,
+    "age": 28,
+    "experience_years": 3,
+    "performance_score": 9.2
+  },
+  {
+    "id": 3,
+    "name": "Bob Johnson",
+    "department": "Sales",
+    "salary": 70000,
+    "age": 35,
+    "experience_years": 7,
+    "performance_score": 7.8
+  },
+  {
+    "id": 4,
+    "name": "Alice Brown",
+    "department": "Engineering",
+    "salary": 80000,
+    "age": 30,
+    "experience_years": 6,
+    "performance_score": 9.0
+  },
+  {
+    "id": 5,
+    "name": "Charlie Wilson",
+    "department": "HR",
+    "salary": 55000,
+    "age": 26,
+    "experience_years": 2,
+    "performance_score": 8.0
+  },
+  {
+    "id": 6,
+    "name": "Diana Davis",
+    "department": "Marketing",
+    "salary": 68000,
+    "age": 29,
+    "experience_years": 4,
+    "performance_score": 8.7
+  },
+  {
+    "id": 7,
+    "name": "Eve Miller",
+    "department": "Sales",
+    "salary": 72000,
+    "age": 33,
+    "experience_years": 8,
+    "performance_score": 8.9
+  },
+  {
+    "id": 8,
+    "name": "Frank Garcia",
+    "department": "Engineering",
+    "salary": 85000,
+    "age": 31,
+    "experience_years": 6,
+    "performance_score": 9.1
+  }
+] 

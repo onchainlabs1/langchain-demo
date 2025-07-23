@@ -1,50 +1,72 @@
-from typing import Dict, Any
+from typing import Dict, Any, TypedDict
 import pandas as pd
 from core.analysis import run_dataframe_analysis
 
 
-def interpreter(question: str) -> Dict[str, str]:
+class GraphState(TypedDict):
+    """State schema for the LangGraph execution."""
+    df: Any  # DataFrame or None
+    question: str
+    next_node: str
+    text_answer: str
+    chart_base64: Any  # str or None
+    status: str
+    message: str
+
+
+def interpreter(state: GraphState) -> GraphState:
     """
     LangGraph interpreter node.
     Decides whether the user's question should be routed to DataFrame analysis
     or if the flow should be terminated.
 
     Args:
-        question (str): User's question in Portuguese.
+        state (GraphState): Current state containing the question.
 
     Returns:
-        dict: Dictionary with the key 'next_node', indicating the next node in the flow.
-              Can be 'run_dataframe_analysis' or 'end'.
+        GraphState: Updated state with next_node decision.
     """
     # Keywords indicating tabular analysis
     keywords = [
         "column", "average", "mean", "graph", "chart", "dataframe", "table",
         "row", "sum", "count", "quantity", "value", "maximum", "minimum"
     ]
-    question_lower = question.lower()
+    question_lower = state["question"].lower()
     if any(word in question_lower for word in keywords):
-        return {"next_node": "run_dataframe_analysis"}
+        return {**state, "next_node": "run_dataframe_analysis"}
     else:
-        return {"next_node": "end"}
+        return {**state, "next_node": "end"}
 
 
-def run_dataframe_analysis_node(input_data: Dict[str, Any]) -> Dict[str, Any]:
+def run_dataframe_analysis_node(state: GraphState) -> GraphState:
     """
     LangGraph node responsible for running the DataFrame analysis.
-    Receives a dictionary with the DataFrame and the question, calls the analysis function,
-    and returns the answer, chart (if any), status, and a message for logs.
+    Receives state with DataFrame and question, calls the analysis function,
+    and returns the complete state with answer, chart (if any), status, and message.
 
     Args:
-        input_data (dict): Must contain the keys 'df' (DataFrame) and 'question' (str).
+        state (GraphState): State containing 'df' (DataFrame) and 'question' (str).
 
     Returns:
-        dict: Contains 'text_answer', 'chart_base64', 'status', and 'message'.
+        GraphState: Complete state with analysis results.
     """
     try:
-        df = input_data["df"]
-        question = input_data["question"]
+        df = state["df"]
+        question = state["question"]
+        
+        # Handle case where DataFrame is None
+        if df is None:
+            return {
+                **state,
+                "text_answer": "No data available for analysis. Please upload a file first.",
+                "chart_base64": None,
+                "status": "ok",
+                "message": "No data provided."
+            }
+        
         answer, chart = run_dataframe_analysis(df, question)
         return {
+            **state,
             "text_answer": answer,
             "chart_base64": chart,
             "status": "ok",
@@ -52,6 +74,7 @@ def run_dataframe_analysis_node(input_data: Dict[str, Any]) -> Dict[str, Any]:
         }
     except Exception as e:
         return {
+            **state,
             "text_answer": "",
             "chart_base64": None,
             "status": "error",
