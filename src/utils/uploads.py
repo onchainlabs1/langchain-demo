@@ -1,24 +1,24 @@
 import os
 from typing import Any
 
-TAMANHO_MAXIMO_MB = 10
-EXTENSOES_PERMITIDAS = {".csv", ".xlsx"}
-DIRETORIO_UPLOADS = os.path.abspath("uploads")
+MAX_FILE_SIZE_MB = 10
+ALLOWED_EXTENSIONS = {".csv", ".xlsx"}
+UPLOADS_DIR = os.path.abspath("uploads")
 
 
-def validar_arquivo_upload(caminho_arquivo: str, diretorio_base: str = DIRETORIO_UPLOADS) -> bool:
+def validate_upload_file(file_path: str, base_dir: str = UPLOADS_DIR) -> bool:
     """
-    Valida se o arquivo enviado atende aos requisitos de segurança:
-    - Extensão permitida (.csv, .xlsx)
-    - Tamanho até 10 MB
-    - Caminho deve estar dentro do diretório de uploads
+    Validates if the uploaded file meets security requirements:
+    - Allowed extension (.csv, .xlsx)
+    - Size up to 10 MB
+    - Path must be inside the uploads directory
     """
-    _, extensao = os.path.splitext(caminho_arquivo)
-    if extensao.lower() not in EXTENSOES_PERMITIDAS:
-        raise ValueError("Extensão de arquivo não permitida. Apenas CSV ou XLSX.")
-    if os.path.getsize(caminho_arquivo) > TAMANHO_MAXIMO_MB * 1024 * 1024:
-        raise ValueError("Arquivo excede o tamanho máximo de 10 MB.")
-    caminho_absoluto = os.path.abspath(caminho_arquivo)
-    if not caminho_absoluto.startswith(diretorio_base):
-        raise ValueError("Arquivo fora do diretório de uploads permitido.")
+    _, extension = os.path.splitext(file_path)
+    if extension.lower() not in ALLOWED_EXTENSIONS:
+        raise ValueError("File extension not allowed. Only CSV or XLSX.")
+    if os.path.getsize(file_path) > MAX_FILE_SIZE_MB * 1024 * 1024:
+        raise ValueError("File exceeds the maximum size of 10 MB.")
+    abs_path = os.path.abspath(file_path)
+    if not abs_path.startswith(base_dir):
+        raise ValueError("File is outside the allowed uploads directory.")
     return True 

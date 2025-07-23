@@ -10,65 +10,65 @@ from langchain_core.runnables import Runnable
 from langchain_sandbox.executors import PyodideExecutor
 from langgraph.graph import StateGraph, END
 
-# Substitua por seu LLM preferido e configuração segura
+# Replace with your preferred LLM and secure configuration
 from langchain_openai import ChatOpenAI
 
-def executar_analise_dataframe(
+def run_dataframe_analysis(
     df: pd.DataFrame, 
-    pergunta: str
+    question: str
 ) -> Tuple[str, Optional[str]]:
     """
-    Executa uma análise segura sobre um DataFrame a partir de uma pergunta em linguagem natural,
-    utilizando LangChain, LangGraph e sandbox Pyodide para execução de código Python.
+    Securely runs an analysis on a DataFrame based on a natural language question,
+    using LangChain, LangGraph, and Pyodide sandbox for Python code execution.
 
-    Parâmetros:
-        df (pd.DataFrame): DataFrame com os dados a serem analisados.
-        pergunta (str): Pergunta do usuário em português.
+    Args:
+        df (pd.DataFrame): DataFrame with the data to be analyzed.
+        question (str): User's question in Portuguese.
 
-    Retorno:
+    Returns:
         Tuple[str, Optional[str]]: 
-            - Resposta textual em português.
-            - Imagem do gráfico em base64 (caso gerado), ou None.
+            - Textual answer in Portuguese.
+            - Chart image in base64 (if generated), or None.
     """
-    # 1. Preparar o contexto para o LLM
-    contexto = f"""
-    Você é um analista de dados. Responda à pergunta do usuário sobre o DataFrame fornecido.
-    Gere código Python SEGURO para análise, usando apenas pandas, matplotlib ou altair.
-    Nunca acesse rede, arquivos ou comandos do sistema.
-    O DataFrame está disponível como 'df'.
-    Pergunta: {pergunta}
+    # 1. Prepare context for the LLM
+    context = f"""
+    You are a data analyst. Answer the user's question about the provided DataFrame.
+    Generate SAFE Python code for analysis, using only pandas, matplotlib, or altair.
+    Never access the network, files, or system commands.
+    The DataFrame is available as 'df'.
+    Question: {question}
     """
 
-    # 2. Instanciar o modelo de linguagem (LLM)
+    # 2. Instantiate the language model (LLM)
     llm: BaseLanguageModel = ChatOpenAI(
         temperature=0.0,
-        model="gpt-3.5-turbo",  # ou outro modelo seguro
+        model="gpt-3.5-turbo",  # or another secure model
         streaming=False
     )
 
-    # 3. Gerar o código Python para análise
+    # 3. Generate the Python code for analysis
     prompt = ChatPromptTemplate.from_messages([
-        ("system", contexto),
-        ("user", "Gere apenas o código Python necessário para responder à pergunta, sem explicações.")
+        ("system", context),
+        ("user", "Generate only the necessary Python code to answer the question, no explanations.")
     ])
-    codigo_gerado = llm.invoke(prompt).content.strip()
+    generated_code = llm.invoke(prompt).content.strip()
 
-    # 4. Validar o código gerado (proibir comandos perigosos)
+    # 4. Validate the generated code (forbid dangerous commands)
     try:
-        arvore = ast.parse(codigo_gerado, mode="exec")
-        for node in ast.walk(arvore):
+        tree = ast.parse(generated_code, mode="exec")
+        for node in ast.walk(tree):
             if isinstance(node, (ast.Import, ast.ImportFrom)):
-                # Permitir apenas importação de pandas, matplotlib, altair
-                nomes = [alias.name for alias in getattr(node, 'names', [])]
-                if any(mod not in ("pandas", "matplotlib", "altair", "pyplot") for mod in nomes):
-                    raise ValueError("Importação de módulo não permitido.")
+                # Allow only pandas, matplotlib, altair imports
+                names = [alias.name for alias in getattr(node, 'names', [])]
+                if any(mod not in ("pandas", "matplotlib", "altair", "pyplot") for mod in names):
+                    raise ValueError("Module import not allowed.")
             if isinstance(node, ast.Call):
                 if isinstance(node.func, ast.Name) and node.func.id in ("open", "exec", "eval", "compile", "os", "sys", "subprocess"):
-                    raise ValueError("Uso de função proibida detectado.")
+                    raise ValueError("Prohibited function usage detected.")
     except Exception as e:
-        return (f"Erro de segurança ao validar o código gerado: {e}", None)
+        return (f"Security error validating generated code: {e}", None)
 
-    # 5. Executar o código em sandbox seguro (Pyodide)
+    # 5. Execute the code in a secure sandbox (Pyodide)
     executor = PyodideExecutor(
         allowed_imports=["pandas", "matplotlib", "altair"],
         disable_network=True,
@@ -76,31 +76,31 @@ def executar_analise_dataframe(
         memory_limit_mb=128
     )
     local_vars = {"df": df}
-    resposta_texto = ""
-    imagem_base64 = None
+    text_answer = ""
+    image_base64 = None
 
     try:
-        # Redirecionar saída de gráficos para buffer
+        # Redirect chart output to buffer
         exec_code = (
             "import matplotlib.pyplot as plt\n"
             "import altair as alt\n"
             "import io, base64\n"
             "buffer = io.BytesIO()\n"
-            + codigo_gerado +
+            + generated_code +
             "\nif 'plt' in locals() and plt.get_fignums():\n"
             "    plt.savefig(buffer, format='png')\n"
             "    buffer.seek(0)\n"
             "    img_b64 = 'data:image/png;base64,' + base64.b64encode(buffer.read()).decode('utf-8')\n"
-            "    resposta = locals().get('resposta', '')\n"
+            "    answer = locals().get('answer', '')\n"
             "else:\n"
             "    img_b64 = None\n"
-            "    resposta = locals().get('resposta', '')\n"
+            "    answer = locals().get('answer', '')\n"
         )
         result = executor.execute(exec_code, local_vars=local_vars)
-        resposta_texto = result.get("resposta", "").strip() or "Análise concluída."
-        imagem_base64 = result.get("img_b64", None)
+        text_answer = result.get("answer", "").strip() or "Analysis completed."
+        image_base64 = result.get("img_b64", None)
     except Exception as e:
-        resposta_texto = f"Ocorreu um erro ao executar a análise: {e}"
-        imagem_base64 = None
+        text_answer = f"An error occurred while running the analysis: {e}"
+        image_base64 = None
 
-    return resposta_texto, imagem_base64 
+    return text_answer, image_base64 

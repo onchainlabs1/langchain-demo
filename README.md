@@ -1,23 +1,23 @@
-# Agente Analista de Dados Seguro
+# Secure Data Analyst Agent
 
-Este projeto é um aplicativo de portfólio que permite o upload de arquivos CSV ou Excel e responde a perguntas em linguagem natural, gerando tabelas e gráficos de forma segura. Utiliza LangChain, LangGraph e Streamlit, com execução segura de código e avaliação automatizada.
+This project is a portfolio application that allows uploading CSV or Excel files and answers natural language questions, generating tables and charts securely. It uses LangChain, LangGraph, and Streamlit, with secure code execution and automated evaluation.
 
-## Como rodar o aplicativo
+## How to run the application
 
-1. Crie o ambiente virtual:
+1. Create the virtual environment:
    ```bash
    python3.12 -m venv .venv
    source .venv/bin/activate
    pip install -r requirements.txt
    ```
-2. Execute o app:
+2. Run the app:
    ```bash
    streamlit run app.py
    ```
 
-## Documentação
-A documentação detalhada está disponível na pasta `/docs`.
+## Documentation
+Detailed documentation is available in the `/docs` folder.
 
 ---
 
-> Todo o conteúdo deste projeto está em português, incluindo código, comentários e documentação.
+> All content in this project is in English, including code, comments, and documentation.

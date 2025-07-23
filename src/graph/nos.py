@@ -1,59 +1,59 @@
 from typing import Dict, Any
 import pandas as pd
-from core.analise import executar_analise_dataframe
+from core.analysis import run_dataframe_analysis
 
 
-def interpretador(pergunta: str) -> Dict[str, str]:
+def interpreter(question: str) -> Dict[str, str]:
     """
-    Nó interpretador do fluxo LangGraph.
-    Decide se a pergunta do usuário deve ser encaminhada para análise de DataFrame
-    ou se o fluxo deve ser encerrado.
+    LangGraph interpreter node.
+    Decides whether the user's question should be routed to DataFrame analysis
+    or if the flow should be terminated.
 
-    Parâmetros:
-        pergunta (str): Pergunta do usuário em português.
+    Args:
+        question (str): User's question in Portuguese.
 
-    Retorno:
-        dict: Dicionário com a chave 'proximo_no', indicando o próximo nó do fluxo.
-              Pode ser 'executar_analise_dataframe' ou 'encerrar'.
+    Returns:
+        dict: Dictionary with the key 'next_node', indicating the next node in the flow.
+              Can be 'run_dataframe_analysis' or 'end'.
     """
-    # Palavras-chave que indicam análise tabular
-    palavras_chave = [
-        "coluna", "média", "media", "gráfico", "grafico", "dataframe", "tabela",
-        "linha", "soma", "contagem", "quantidade", "valor", "máximo", "minimo", "mínimo", "máximo"
+    # Keywords indicating tabular analysis
+    keywords = [
+        "column", "average", "mean", "graph", "chart", "dataframe", "table",
+        "row", "sum", "count", "quantity", "value", "maximum", "minimum"
     ]
-    pergunta_lower = pergunta.lower()
-    if any(palavra in pergunta_lower for palavra in palavras_chave):
-        return {"proximo_no": "executar_analise_dataframe"}
+    question_lower = question.lower()
+    if any(word in question_lower for word in keywords):
+        return {"next_node": "run_dataframe_analysis"}
     else:
-        return {"proximo_no": "encerrar"}
+        return {"next_node": "end"}
 
 
-def executar_analise_dataframe_node(entrada: Dict[str, Any]) -> Dict[str, Any]:
+def run_dataframe_analysis_node(input_data: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Nó do LangGraph responsável por executar a análise do DataFrame.
-    Recebe um dicionário com o DataFrame e a pergunta, chama a função de análise
-    e retorna a resposta, gráfico (se houver), status e mensagem para logs.
+    LangGraph node responsible for running the DataFrame analysis.
+    Receives a dictionary with the DataFrame and the question, calls the analysis function,
+    and returns the answer, chart (if any), status, and a message for logs.
 
-    Parâmetros:
-        entrada (dict): Deve conter as chaves 'df' (DataFrame) e 'pergunta' (str).
+    Args:
+        input_data (dict): Must contain the keys 'df' (DataFrame) and 'question' (str).
 
-    Retorno:
-        dict: Contém 'resposta_textual', 'grafico_base64', 'status' e 'mensagem'.
+    Returns:
+        dict: Contains 'text_answer', 'chart_base64', 'status', and 'message'.
     """
     try:
-        df = entrada["df"]
-        pergunta = entrada["pergunta"]
-        resposta, grafico = executar_analise_dataframe(df, pergunta)
+        df = input_data["df"]
+        question = input_data["question"]
+        answer, chart = run_dataframe_analysis(df, question)
         return {
-            "resposta_textual": resposta,
-            "grafico_base64": grafico,
+            "text_answer": answer,
+            "chart_base64": chart,
             "status": "ok",
-            "mensagem": "Análise realizada com sucesso."
+            "message": "Analysis completed successfully."
         }
     except Exception as e:
         return {
-            "resposta_textual": "",
-            "grafico_base64": None,
-            "status": "erro",
-            "mensagem": f"Erro ao executar análise: {e}"
+            "text_answer": "",
+            "chart_base64": None,
+            "status": "error",
+            "message": f"Error running analysis: {e}"
         } 

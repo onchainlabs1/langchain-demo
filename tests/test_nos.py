@@ -1,52 +1,52 @@
 import pytest
 import pandas as pd
 import re
-from graph.nos import interpretador, executar_analise_dataframe_node
+from graph.nos import interpreter, run_dataframe_analysis_node
 
 
-def test_interpretador_analise_tabular():
-    pergunta = "Qual é a média da coluna A?"
-    resultado = interpretador(pergunta)
-    assert resultado == {"proximo_no": "executar_analise_dataframe"}, "Deveria encaminhar para análise de DataFrame."
+def test_interpreter_tabular_analysis():
+    question = "What is the average of column A?"
+    result = interpreter(question)
+    assert result == {"next_node": "run_dataframe_analysis"}, "Should route to DataFrame analysis."
 
 
-def test_interpretador_pergunta_geral():
-    pergunta = "Qual a capital da França?"
-    resultado = interpretador(pergunta)
-    assert resultado == {"proximo_no": "encerrar"}, "Deveria encerrar para perguntas não tabulares."
+def test_interpreter_general_question():
+    question = "What is the capital of France?"
+    result = interpreter(question)
+    assert result == {"next_node": "end"}, "Should end for non-tabular questions."
 
 
-def test_interpretador_palavra_chave_variada():
-    pergunta = "Mostre um gráfico da soma dos valores."
-    resultado = interpretador(pergunta)
-    assert resultado == {"proximo_no": "executar_analise_dataframe"}, "Deveria encaminhar para análise de DataFrame."
+def test_interpreter_keyword_variation():
+    question = "Show a graph of the sum of the values."
+    result = interpreter(question)
+    assert result == {"next_node": "run_dataframe_analysis"}, "Should route to DataFrame analysis."
 
 
-def test_interpretador_maiusculas_minusculas():
-    pergunta = "QuAl A MÉDIA da COLUNA preço?"
-    resultado = interpretador(pergunta)
-    assert resultado == {"proximo_no": "executar_analise_dataframe"}, "Deveria ser case-insensitive."
+def test_interpreter_case_insensitive():
+    question = "WhAt Is ThE AvErAgE Of CoLuMn price?"
+    result = interpreter(question)
+    assert result == {"next_node": "run_dataframe_analysis"}, "Should be case-insensitive."
 
 
-def test_executar_analise_dataframe_node():
+def test_run_dataframe_analysis_node():
     """
-    Testa o nó executar_analise_dataframe_node com um DataFrame de exemplo e uma pergunta.
-    Verifica se a resposta textual está presente, status é 'ok' e o gráfico (se houver) é válido.
+    Tests the run_dataframe_analysis_node with a sample DataFrame and a question.
+    Checks if the text answer is present, status is 'ok', and the chart (if any) is valid.
     """
-    dados = {
-        "Produto": ["A", "B", "C", "D", "E"],
-        "Preço": [10.0, 20.0, 30.0, 40.0, 50.0],
-        "Quantidade": [1, 2, 3, 4, 5],
+    data = {
+        "Product": ["A", "B", "C", "D", "E"],
+        "Price": [10.0, 20.0, 30.0, 40.0, 50.0],
+        "Quantity": [1, 2, 3, 4, 5],
     }
-    df = pd.DataFrame(dados)
-    entrada = {
+    df = pd.DataFrame(data)
+    input_data = {
         "df": df,
-        "pergunta": "Qual é a média da coluna Preço?"
+        "question": "What is the average of the Price column?"
     }
-    resultado = executar_analise_dataframe_node(entrada)
-    assert resultado["status"] == "ok", f"Status deveria ser 'ok', mas foi: {resultado['status']} ({resultado['mensagem']})"
-    assert isinstance(resultado["resposta_textual"], str) and resultado["resposta_textual"].strip() != "", "A resposta textual não pode ser vazia."
-    assert re.search(r"\d", resultado["resposta_textual"]), "A resposta deve conter um número."
-    if resultado["grafico_base64"] is not None:
-        assert isinstance(resultado["grafico_base64"], str), "O gráfico deve ser uma string base64."
-        assert resultado["grafico_base64"].startswith("data:image") or resultado["grafico_base64"].startswith("iVBOR"), "O gráfico deve estar em formato base64 de imagem." 
+    result = run_dataframe_analysis_node(input_data)
+    assert result["status"] == "ok", f"Status should be 'ok', got: {result['status']} ({result['message']})"
+    assert isinstance(result["text_answer"], str) and result["text_answer"].strip() != "", "Text answer should not be empty."
+    assert re.search(r"\d", result["text_answer"]), "The answer should contain a number."
+    if result["chart_base64"] is not None:
+        assert isinstance(result["chart_base64"], str), "Chart should be a base64 string."
+        assert result["chart_base64"].startswith("data:image") or result["chart_base64"].startswith("iVBOR"), "Chart should be a valid base64 image." 

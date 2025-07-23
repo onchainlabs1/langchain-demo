@@ -1,10 +1,10 @@
-# Documentação do Agente Analista de Dados Seguro
+# Secure Data Analyst Agent Documentation
 
-Esta pasta contém a documentação detalhada do projeto, incluindo arquitetura, exemplos de uso, requisitos de segurança e instruções para desenvolvedores.
+This folder contains the detailed documentation of the project, including architecture, usage examples, security requirements, and developer instructions.
 
-## Estrutura
-- Visão geral do sistema
-- Guia de instalação e uso
-- Detalhes sobre segurança e sandbox
-- Exemplos de perguntas e respostas
-- Como rodar testes e avaliações 
+## Structure
+- System overview
+- Installation and usage guide
+- Security and sandbox details
+- Example questions and answers
+- How to run tests and evaluations 
