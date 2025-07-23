@@ -1,21 +1,23 @@
 import streamlit as st
 import pandas as pd
-import io
 import base64
-from typing import Optional, Tuple
+import io
 import sys
 import os
+from typing import Optional, Tuple
 
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
-from core.analysis import execute_dataframe_analysis
-from graph.grafo import build_graph
 from core.upload import validate_file_upload
+from graph.grafo import build_graph
 
 
 def main():
-    """Main Streamlit application for the Data Analyst Agent."""
+    """
+    Main Streamlit application for the Data Analyst Agent.
+    Provides a user-friendly interface for data analysis using LangGraph.
+    """
     
     # Page configuration
     st.set_page_config(
@@ -33,17 +35,17 @@ def main():
         font-weight: bold;
         color: #1f77b4;
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
     }
     .sub-header {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         color: #666;
         text-align: center;
         margin-bottom: 2rem;
     }
     .upload-section {
         background-color: #f8f9fa;
-        padding: 2rem;
+        padding: 1.5rem;
         border-radius: 10px;
         border: 2px dashed #dee2e6;
         margin: 1rem 0;
@@ -59,6 +61,13 @@ def main():
         text-align: center;
         margin: 1rem 0;
     }
+    .info-box {
+        background-color: #e3f2fd;
+        padding: 1rem;
+        border-radius: 5px;
+        border-left: 4px solid #2196f3;
+        margin: 1rem 0;
+    }
     </style>
     """, unsafe_allow_html=True)
     
@@ -66,47 +75,36 @@ def main():
     st.markdown('<h1 class="main-header">📊 Data Analyst Agent</h1>', unsafe_allow_html=True)
     st.markdown('<p class="sub-header">Upload your data and ask questions to get intelligent insights</p>', unsafe_allow_html=True)
     
-    # Sidebar
+    # Sidebar with information
     with st.sidebar:
-        st.header("⚙️ Settings")
+        st.header("ℹ️ About")
+        st.markdown("""
+        This application uses LangChain and LangGraph to provide intelligent data analysis.
         
-        # Analysis type selection
-        analysis_type = st.selectbox(
-            "Analysis Type",
-            ["Basic Analysis", "Statistical Analysis", "Visualization", "Custom Query"],
-            help="Choose the type of analysis you want to perform"
-        )
-        
-        # Security level
-        security_level = st.selectbox(
-            "Security Level",
-            ["High", "Medium", "Low"],
-            index=0,
-            help="Higher security means more restrictions on code execution"
-        )
-        
-        # Max execution time
-        max_execution_time = st.slider(
-            "Max Execution Time (seconds)",
-            min_value=5,
-            max_value=60,
-            value=30,
-            help="Maximum time allowed for analysis execution"
-        )
+        **Features:**
+        - Multi-format file support
+        - Natural language queries
+        - Secure data processing
+        - Interactive visualizations
+        """)
         
         st.markdown("---")
-        st.markdown("### 📋 Supported Formats")
-        st.markdown("- CSV files")
-        st.markdown("- Excel files (.xlsx, .xls)")
-        st.markdown("- JSON files")
-        st.markdown("- Parquet files")
+        st.header("📋 Supported Formats")
+        st.markdown("""
+        - **CSV** files (.csv)
+        - **Excel** files (.xlsx, .xls)
+        - **JSON** files (.json)
+        - **Parquet** files (.parquet)
+        """)
         
         st.markdown("---")
-        st.markdown("### 🔒 Security Features")
-        st.markdown("- Code validation")
-        st.markdown("- Sandbox execution")
-        st.markdown("- Input sanitization")
-        st.markdown("- Timeout protection")
+        st.header("💡 Example Questions")
+        st.markdown("""
+        - "What is the average of column X?"
+        - "Show me a summary of the data"
+        - "What are the main trends?"
+        - "Generate statistics for numeric columns"
+        """)
     
     # Main content area
     col1, col2 = st.columns([1, 1])
@@ -115,26 +113,41 @@ def main():
         st.markdown('<div class="upload-section">', unsafe_allow_html=True)
         st.header("📁 Upload Your Data")
         
+        # File uploader with caching
         uploaded_file = st.file_uploader(
-            "Choose a file",
+            "Choose a file to analyze",
             type=['csv', 'xlsx', 'xls', 'json', 'parquet'],
-            help="Upload your dataset for analysis"
+            help="Select a data file to upload and analyze"
         )
         
+        # Display file info if uploaded
         if uploaded_file is not None:
-            # Validate file upload
             try:
-                df = validate_file_upload(uploaded_file)
-                st.success(f"✅ File uploaded successfully! Shape: {df.shape}")
+                # Use cache to avoid reloading the same file
+                @st.cache_data
+                def load_data(file):
+                    """Load and validate uploaded file data."""
+                    return validate_file_upload(file)
+                
+                df = load_data(uploaded_file)
+                
+                st.success(f"✅ File uploaded successfully!")
+                st.info(f"**Dataset Info:** {df.shape[0]} rows × {df.shape[1]} columns")
                 
                 # Show data preview
                 with st.expander("📋 Data Preview"):
-                    st.dataframe(df.head(10))
-                    st.write(f"**Columns:** {list(df.columns)}")
-                    st.write(f"**Data Types:** {dict(df.dtypes)}")
+                    st.dataframe(df.head(10), use_container_width=True)
+                    st.write(f"**Columns:** {', '.join(df.columns)}")
+                    
+                    # Show data types
+                    dtype_info = df.dtypes.to_dict()
+                    st.write("**Data Types:**")
+                    for col, dtype in dtype_info.items():
+                        st.write(f"- {col}: {dtype}")
                 
             except Exception as e:
                 st.error(f"❌ Error uploading file: {str(e)}")
+                st.info("💡 Please check the file format and try again.")
                 df = None
         else:
             df = None
@@ -149,63 +162,89 @@ def main():
         # Question input
         question = st.text_area(
             "What would you like to know about your data?",
-            height=150,
-            placeholder="e.g., What are the main trends in this dataset? Show me a correlation analysis. Create a visualization of sales by region.",
-            help="Ask any question about your data"
+            height=120,
+            placeholder="e.g., What is the average of the Sales column? Show me a summary of the data. What are the main trends?",
+            help="Ask any question about your data in natural language"
         )
         
-        # Example questions
-        with st.expander("💡 Example Questions"):
-            st.markdown("""
-            - What are the main trends in this dataset?
-            - Show me a correlation analysis between numeric columns
-            - Create a visualization of sales by region
-            - What are the top 5 values in each column?
-            - Generate summary statistics for the dataset
-            - Are there any missing values or outliers?
-            """)
+        # Analysis button
+        analyze_button = st.button(
+            "🚀 Analyze Data",
+            type="primary",
+            disabled=df is None or not question.strip(),
+            help="Click to analyze your data with the uploaded question"
+        )
+        
+        if df is None or not question.strip():
+            if df is None:
+                st.warning("⚠️ Please upload a file first")
+            elif not question.strip():
+                st.warning("⚠️ Please enter a question")
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # Analysis execution
-    if st.button("🚀 Run Analysis", type="primary", disabled=df is None or not question.strip()):
-        st.warning("Please upload a file and enter a question to run analysis")
-    
-    if df is not None and question.strip() and st.button("🚀 Run Analysis", type="primary"):
-        with st.spinner("🔍 Analyzing your data..."):
+    # Analysis results section
+    if analyze_button and df is not None and question.strip():
+        st.markdown('<div class="result-section">', unsafe_allow_html=True)
+        st.header("📊 Analysis Results")
+        
+        # Show spinner during analysis
+        with st.spinner("🔍 Analyzing your data with LangGraph..."):
             try:
-                # Execute analysis
-                result_text, chart_base64 = execute_dataframe_analysis(
-                    df=df,
-                    question=question,
-                    security_level=security_level,
-                    max_execution_time=max_execution_time
-                )
+                # Build and run the LangGraph
+                graph = build_graph()
+                
+                # Prepare initial state for the graph
+                initial_state = {
+                    "df": df,
+                    "question": question,
+                    "next_node": "",
+                    "text_answer": "",
+                    "chart_base64": None,
+                    "status": "",
+                    "message": ""
+                }
+                
+                # Execute the analysis
+                result = graph.invoke(initial_state)
                 
                 # Display results
-                st.markdown('<div class="result-section">', unsafe_allow_html=True)
-                st.header("📊 Analysis Results")
-                
-                # Text results
-                st.subheader("📝 Analysis Summary")
-                st.write(result_text)
-                
-                # Chart if available
-                if chart_base64:
-                    st.subheader("📈 Visualization")
-                    st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+                if result["status"] == "ok":
+                    st.success("✅ Analysis completed successfully!")
                     
-                    # Decode and display chart
-                    chart_data = base64.b64decode(chart_base64)
-                    st.image(chart_data, use_column_width=True)
+                    # Display text answer
+                    st.subheader("📝 Analysis Summary")
+                    st.write(result["text_answer"])
                     
-                    st.markdown('</div>', unsafe_allow_html=True)
+                    # Display chart if available
+                    if result["chart_base64"]:
+                        st.subheader("📈 Visualization")
+                        st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+                        
+                        try:
+                            # Decode and display chart
+                            chart_data = base64.b64decode(result["chart_base64"])
+                            st.image(chart_data, use_column_width=True, caption="Generated Chart")
+                        except Exception as e:
+                            st.error(f"Error displaying chart: {str(e)}")
+                        
+                        st.markdown('</div>', unsafe_allow_html=True)
+                    
+                    # Show additional info
+                    with st.expander("🔍 Analysis Details"):
+                        st.write(f"**Status:** {result['status']}")
+                        st.write(f"**Message:** {result['message']}")
+                        st.write(f"**Next Node:** {result['next_node']}")
                 
-                st.markdown('</div>', unsafe_allow_html=True)
+                else:
+                    st.error(f"❌ Analysis failed: {result['message']}")
+                    st.info("💡 Try rephrasing your question or uploading a different file")
                 
             except Exception as e:
-                st.error(f"❌ Analysis failed: {str(e)}")
-                st.info("💡 Try rephrasing your question or uploading a different file")
+                st.error(f"❌ Error during analysis: {str(e)}")
+                st.info("💡 Please check your data and question, then try again")
+        
+        st.markdown('</div>', unsafe_allow_html=True)
     
     # Footer
     st.markdown("---")
