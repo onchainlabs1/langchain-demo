@@ -1,0 +1,16 @@
+Order_ID,Customer_ID,Product_Name,Category,Price,Quantity,Order_Date,Region,Payment_Method,Rating
+1001,CUST001,MacBook Pro,Laptop,1299.99,1,2024-01-15,North,Credit Card,4.5
+1002,CUST002,iPhone 15,Phone,999.99,2,2024-01-16,South,PayPal,4.8
+1003,CUST003,AirPods Pro,Audio,249.99,1,2024-01-17,East,Credit Card,4.2
+1004,CUST004,iPad Air,Tablet,599.99,1,2024-01-18,West,Debit Card,4.6
+1005,CUST005,Apple Watch,Smartwatch,399.99,3,2024-01-19,North,Credit Card,4.7
+1006,CUST006,MacBook Air,Laptop,1099.99,1,2024-01-20,South,PayPal,4.4
+1007,CUST007,iPhone 14,Phone,799.99,2,2024-01-21,East,Credit Card,4.3
+1008,CUST008,AirPods Max,Audio,549.99,1,2024-01-22,West,Debit Card,4.1
+1009,CUST009,iPad Pro,Tablet,799.99,1,2024-01-23,North,Credit Card,4.9
+1010,CUST010,Apple TV,Streaming,179.99,2,2024-01-24,South,PayPal,4.0
+1011,CUST011,Mac Mini,Computer,699.99,1,2024-01-25,East,Credit Card,4.6
+1012,CUST012,iPhone 13,Phone,699.99,1,2024-01-26,West,Debit Card,4.5
+1013,CUST013,HomePod,Audio,299.99,1,2024-01-27,North,Credit Card,4.3
+1014,CUST014,iPad Mini,Tablet,499.99,2,2024-01-28,South,PayPal,4.4
+1015,CUST015,Mac Studio,Computer,1999.99,1,2024-01-29,East,Credit Card,4.8 

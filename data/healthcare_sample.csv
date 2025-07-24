@@ -1,0 +1,16 @@
+Patient_ID,Age,Sex,BMI,Children,Smoker,Region,Charges,Insurance_Type,Diagnosis
+P001,25,Male,27.9,0,No,Southwest,16884.92,Private,Hypertension
+P002,26,Female,33.77,1,No,Southeast,1725.55,Public,Diabetes
+P003,27,Male,33.0,3,No,Southeast,4449.46,Private,Asthma
+P004,28,Female,22.705,0,No,Northwest,21984.47,Private,Heart Disease
+P005,29,Male,28.88,0,No,Northwest,3866.86,Public,Depression
+P006,30,Female,25.74,0,No,Southeast,3756.62,Private,Anxiety
+P007,31,Male,33.44,1,No,Southeast,8240.59,Public,Back Pain
+P008,32,Female,27.74,3,No,Northwest,6406.41,Private,Arthritis
+P009,33,Male,29.83,1,No,Northeast,36837.47,Private,Cancer
+P010,34,Female,25.84,0,No,Northeast,2137.65,Public,Allergies
+P011,35,Male,26.22,0,No,Northwest,9850.43,Private,Obesity
+P012,36,Female,26.29,0,No,Southeast,1629.83,Public,Insomnia
+P013,37,Male,34.4,2,No,Southwest,11356.66,Private,Stroke
+P014,38,Female,24.6,0,No,Southwest,28923.14,Private,Diabetes
+P015,39,Male,23.845,3,No,Northeast,5856.44,Public,Hypertension 

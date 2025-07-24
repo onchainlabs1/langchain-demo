@@ -1,0 +1,16 @@
+Property_ID,Price,SqFt,Bedrooms,Bathrooms,Year_Built,Location,Property_Type,Pool,Garage,School_Rating
+RE001,450000,2200,3,2,2010,Suburban,House,No,2,8.5
+RE002,325000,1800,2,2,2008,Urban,Condo,No,1,7.8
+RE003,650000,3200,4,3,2015,Suburban,House,Yes,2,9.2
+RE004,280000,1500,2,1,2005,Urban,Townhouse,No,1,7.5
+RE005,520000,2400,3,2,2012,Suburban,House,No,2,8.8
+RE006,380000,2000,3,2,2009,Urban,Condo,Yes,1,8.1
+RE007,750000,3500,4,3,2018,Suburban,House,Yes,3,9.5
+RE008,295000,1600,2,2,2007,Urban,Townhouse,No,1,7.9
+RE009,480000,2300,3,2,2011,Suburban,House,No,2,8.3
+RE010,420000,2100,3,2,2010,Urban,Condo,No,1,8.0
+RE011,580000,2700,4,2,2013,Suburban,House,Yes,2,8.7
+RE012,350000,1900,3,2,2008,Urban,Townhouse,No,1,7.6
+RE013,680000,3100,4,3,2016,Suburban,House,Yes,2,9.1
+RE014,310000,1700,2,2,2006,Urban,Condo,No,1,7.7
+RE015,540000,2500,3,2,2014,Suburban,House,No,2,8.6 
